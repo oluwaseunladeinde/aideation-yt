@@ -6,24 +6,26 @@ import { generateImage, generateImagePrompt } from "@/lib/openai";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request){
-    const {userId} = auth();
-    if(!userId){
-        return new NextResponse('unauthorized', {status: 401});
+export const runtime = 'edge';
+
+export async function POST(req: Request) {
+    const { userId } = auth();
+    if (!userId) {
+        return new NextResponse('unauthorized', { status: 401 });
     }
     const body = await req.json();
-    const {name} = body;
+    const { name } = body;
 
     console.log("Generating image description");
     const image_description = await generateImagePrompt(name);
-    if(!image_description){
-        return new NextResponse('failed to generate image description', {status: 500});
+    if (!image_description) {
+        return new NextResponse('failed to generate image description', { status: 500 });
     }
 
     console.log("Generating image");
     const image_url = await generateImage(image_description);
-    if (!image_url){
-        return new NextResponse('failed to generate image', {status: 500});
+    if (!image_url) {
+        return new NextResponse('failed to generate image', { status: 500 });
     }
 
     // insert new note
